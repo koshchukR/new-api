@@ -6,7 +6,7 @@ import { AddLanguageCommand } from '../add-language.command';
 import { LanguagesInterface } from '../../../languages/contracts/models/languages.interface';
 
 @Injectable()
-export class AddLanguagesCommandHandler
+export class AddTranslationsCommandHandler
   implements ICommandHandler<AddLanguageCommand, void>
 {
   constructor(@InjectModel() private readonly connection: Knex) {}

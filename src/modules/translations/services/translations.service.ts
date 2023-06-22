@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { readFile, utils, set_fs, read } from "xlsx";
+import * as XLSX from "xlsx";
+import { read, utils, write } from "xlsx";
 import { iFile } from "../commands/add-language.command";
-import { AddLanguagesCommandHandler } from "../commands/handlers/add-languages.command-handler";
-import { isObject } from "@nestjs/common/utils/shared.utils";
+import { AddTranslationsCommandHandler } from "../commands/handlers/add-translations.command-handler";
+import { GetTranslationsCommandHandler } from "../commands/handlers/get-translations.command-handler";
 
 @Injectable()
 export class TranslationsService {
-    constructor(private addLanguagesCommandHandler: AddLanguagesCommandHandler) {
+    constructor(private addLanguagesCommandHandler: AddTranslationsCommandHandler,
+                private getTranslationsCommandHandler: GetTranslationsCommandHandler) {
     }
 
     async createUpdateTranslationFile(file: Express.Multer.File, language: string, file_name: string) {
@@ -20,26 +22,49 @@ export class TranslationsService {
             case 'xmlx':
                 language_list = this.parseXmlFile(file);
                 break;
+            case 'yml':
+                //TODO YALM FILE
+                break;
+            default:
+                throw Error('Format incorrect')
         }
 
         if (language_list[0])
-        await this.addLanguagesCommandHandler.execute({ language_list, language })
+            await this.addLanguagesCommandHandler.execute({ language_list, language })
     }
 
-    parseXmlFile(file: Express.Multer.File): Array<iFile> {
+
+    async downloadFile(language, file_name, errorCallback: (e) => void) {
+        const type = file_name.split('.').slice(-1)[0]
+
+        const translations = await this.getTranslationsCommandHandler.execute({ language })
+
+        let ws = XLSX.utils.json_to_sheet(translations);
+        let wb = XLSX.utils.book_new();
+
+        XLSX.utils.book_append_sheet(wb, ws, `Languages_${language}.xlsx`);
+        return XLSX.write(wb, { bookType: "xlsx", type: "buffer" })
+
+
+    }
+
+    private parseXmlFile(file: Express.Multer.File): Array<iFile> {
         const workbook = read(file.buffer)
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-
         return utils.sheet_to_json(worksheet)
     }
 
-    parseJsonFile(file: any): Array<iFile> {
-        file.flat()
-        console.log(file)
+    private parseJsonFile(file: any): Array<iFile> {
         return this.getKeyValue(Object.entries(file))
+
     }
 
-    getKeyValue(obj) {
+    private writeFileXmls(data) {
+
+        return write(data, { type: "buffer", bookType: "xlsx" })
+    }
+
+    private getKeyValue(obj) {
         return obj.map(([key, value]) => {
             if (typeof value == "object") {
                 let res = this.getKeyValue(Object.entries(value))
@@ -47,7 +72,7 @@ export class TranslationsService {
                     res = res[0]
                 }
                 return res.map(({ key: newKey, value: newValue }, index) => {
-                    let someKey = key
+                    let someKey;
                     someKey = [key, newKey].join('.')
                     value = newValue
                     return ({ key: someKey, value })
@@ -57,18 +82,5 @@ export class TranslationsService {
             }
         }).flat()
     }
-
-
-    // const res =  Object.entries(obj).map(( [key, value])=>{
-    //      if (typeof value === "object") {
-    //          let res = this.getKeyValue(value)
-    //          key = [key, res.key].join('.')
-    //          value = res.value
-    //      }
-    //      return({key, value})
-    //  })
-    //
-    //  console.log(res)
-    //  return res
 }
 
