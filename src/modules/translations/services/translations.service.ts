@@ -3,7 +3,6 @@ import { iFile } from "../commands/add-language.command";
 import { AddTranslationsCommandHandler } from "../commands/handlers/add-translations.command-handler";
 import { GetTranslationsCommandHandler } from "../commands/handlers/get-translations.command-handler";
 import { FileFormationHelper } from '../helpers/file-formation.helper'
-import fs from 'fs'
 
 @Injectable()
 export class TranslationsService {

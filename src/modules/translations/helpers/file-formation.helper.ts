@@ -1,8 +1,7 @@
 import { iFile } from "../commands/add-language.command";
-import { read, utils, write } from "xlsx";
 import * as XLSX from "xlsx";
+import { read, utils } from "xlsx";
 import { createReadStream, writeFileSync } from "fs";
-import { map, throttle } from "rxjs";
 import * as os from "os";
 import * as path from "path";
 
@@ -12,7 +11,7 @@ export class FileFormationHelper {
         if (typeof value == "object") {
             const [newKey, newValue] = Object.entries(value)[0]
             arr[key] = {}
-             arr[key]= this.parseObj(newKey, newValue, arr[key])
+            arr[key] = this.parseObj(newKey, newValue, arr[key])
             return arr
         }
         // arr[key]= value
@@ -38,7 +37,7 @@ export class FileFormationHelper {
     }
 
     static writeFileJson(data) {
-      return this.setKeyValue(data)
+        return this.setKeyValue(data)
     }
 
     private static setKeyValue(data) {
