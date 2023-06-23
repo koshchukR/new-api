@@ -9,17 +9,12 @@ export class TranslationsController {
     constructor(private readonly service: TranslationsService) {
     }
 
-    @Get('get/:language/:file([a-z|A-Z\\d\\-_]*.(?:xmlx|xml|json))')
+    @Get(':language/:file([a-z|A-Z\\d\\-_]*.(?:xlsx|xls|json))')
     async  download(@Param('language') language: string,
              @Param('file') file_name: string,
              @Res({ passthrough: true }) response: Response
-    ) {
-        const errorHandler = (e) => {
-            console.error(e);
-            // response.end();
-        };
-
-        const stream = await this.service.downloadFile(language,file_name, errorHandler)
+    ):Promise<StreamableFile| void>  {
+        const stream = await this.service.downloadFile(language,file_name)
         response.set({
             'Content-Type': 'application/json',
             'Content-Disposition': `attachment; filename="Languages_${language}.xlsx"`
@@ -30,10 +25,10 @@ export class TranslationsController {
 
     @Post('add/:language/:file([a-z|A-Z\\d\\-_]*.(?:xmlx|xml|json))')
     @UseInterceptors(FileInterceptor('file'))
-    update(@UploadedFile() file: Express.Multer.File,
+    async update(@UploadedFile() file: Express.Multer.File,
            @Param('language') language: string,
-           @Param('file') file_name: string) {
-        this.service.createUpdateTranslationFile(file, language, file_name);
+           @Param('file') file_name: string):Promise<void> {
+        await this.service.createUpdateTranslationFile(file, language, file_name);
     }
 
 
