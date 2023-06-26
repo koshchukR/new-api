@@ -13,10 +13,10 @@ export class TranslationsController {
                    @Param('file') file_name: string,
                    @Res({ passthrough: true }) response: Response
     ): Promise<StreamableFile | void> {
-        const stream = await this.service.downloadFile(language, file_name)
+        const stream = await this.service.downloadFile(language, file_name);
         response.set({
             'Content-Type': 'application/json',
-            'Content-Disposition': `attachment; filename="Languages_${language}.xlsx"`
+            'Content-Disposition': `attachment; filename="${file_name}"`
         })
         return new StreamableFile(stream);
 
