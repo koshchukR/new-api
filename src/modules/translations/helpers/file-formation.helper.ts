@@ -4,6 +4,7 @@ import { read, utils } from "xlsx";
 import { createReadStream, writeFileSync } from "fs";
 import * as os from "os";
 import * as path from "path";
+import { PassThrough } from 'stream';
 
 export class FileFormationHelper {
 
@@ -31,20 +32,28 @@ export class FileFormationHelper {
 
     static writeFileXmls(data, language) {
         let ws = XLSX.utils.json_to_sheet(data);
+
         let wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, `Languages_${language}.xlsx`);
-        return createReadStream(XLSX.write(wb, { bookType: "xlsx", type: "buffer" }))
+        const res = XLSX.write(wb, { bookType: "xlsx", type: "buffer" });
+
+        const stream = new PassThrough();
+        stream.end(res);
+
+        return stream;
     }
+
 
     static writeFileJson(data) {
         return this.setKeyValue(data)
     }
 
     private static setKeyValue(data) {
-        let currentObj = {};
+        const result = {};
 
         for (const item of data) {
             const keys = item.key.split('.');
+            let currentObj = result;
 
             for (let i = 0; i < keys.length; i++) {
                 const key = keys[i];
@@ -58,7 +67,7 @@ export class FileFormationHelper {
                 }
             }
         }
-        const jsonStr = JSON.stringify(currentObj, null, 2);
+        const jsonStr = JSON.stringify(result, null, 2);
 
         // Create a temporary file with a shorter name
         const tempFileName = 'temp.json';
