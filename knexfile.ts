@@ -3,18 +3,22 @@ import type { Knex } from "knex";
 // Update with your config settings.
 
 const config: { [key: string]: Knex.Config } = {
-  development: {
+  dev: {
     client: "mysql",
     connection: {
-        host: '127.0.0.1',
-        user: 'root',
-        password: 'root',
-        database: 'mysql_x24',
+      host: "localhost",
+      port: 3306,
+      user: "root",
+      password: "root",
+      database: "mysql_x24"
+    },
+    migrations:{
+      directory: './src/migrations'
     }
   },
 
-  staging: {
-    client: "postgresql",
+  stag: {
+    client: "mysql",
     connection: {
       database: "my_db",
       user: "username",
@@ -29,8 +33,8 @@ const config: { [key: string]: Knex.Config } = {
     }
   },
 
-  production: {
-    client: "postgresql",
+  prod: {
+    client: "mysql",
     connection: {
       database: "my_db",
       user: "username",

@@ -3,6 +3,8 @@ import { iFile } from "../commands/add-language.command";
 import { AddTranslationsCommandHandler } from "../commands/handlers/add-translations.command-handler";
 import { GetTranslationsCommandHandler } from "../commands/handlers/get-translations.command-handler";
 import { FileFormationHelper } from '../helpers/file-formation.helper'
+import * as yaml from 'js-yaml';
+
 
 @Injectable()
 export class TranslationsService {
@@ -17,17 +19,16 @@ export class TranslationsService {
             case 'json':
                 language_list = FileFormationHelper.parseJsonFile(JSON.parse(file.buffer.toString()));
                 break;
-            case 'xml':
-            case 'xmlx':
+            case 'xls':
+            case 'xlsx':
                 language_list = FileFormationHelper.parseXmlFile(file);
                 break;
-            case 'yml':
-                //TODO YALM FILE
+            case 'yaml':
+                 language_list = yaml.load(file.buffer.toString());
                 break;
             default:
                 throw Error('Format incorrect')
         }
-
         if (language_list[0])
             await this.addLanguagesCommandHandler.execute({ language_list, language })
     }
@@ -43,7 +44,9 @@ export class TranslationsService {
                 return FileFormationHelper.writeFileJson(translations)
             case 'xlsx':
             case 'xls':
-                return FileFormationHelper.writeFileXmls(translations, language)
+                return FileFormationHelper.writeFileXlsx(translations, language)
+            case 'yaml':
+                return FileFormationHelper.writeFileYaml(translations)
             default:
                 throw Error('Format incorrect')
 

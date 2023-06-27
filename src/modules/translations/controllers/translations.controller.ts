@@ -8,21 +8,21 @@ export class TranslationsController {
     constructor(private readonly service: TranslationsService) {
     }
 
-    @Get(':language/:file([a-z|A-Z\\d\\-_]*.(?:xlsx|xls|json))')
+    @Get(':language/:file([a-z|A-Z\\d\\-_]*.(?:xlsx|xls|json|yaml))')
     async download(@Param('language') language: string,
                    @Param('file') file_name: string,
                    @Res({ passthrough: true }) response: Response
     ): Promise<StreamableFile | void> {
         const stream = await this.service.downloadFile(language, file_name);
         response.set({
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/x-yaml',
             'Content-Disposition': `attachment; filename="${file_name}"`
         })
+        console.log(1);
         return new StreamableFile(stream);
-
     }
 
-    @Post('add/:language/:file([a-z|A-Z\\d\\-_]*.(?:xmlx|xml|json))')
+    @Post('add/:language/:file([a-z|A-Z\\d\\-_]*.(?:xlsx|xls|json|yaml))')
     @UseInterceptors(FileInterceptor('file'))
     async update(@UploadedFile() file: Express.Multer.File,
                  @Param('language') language: string,
