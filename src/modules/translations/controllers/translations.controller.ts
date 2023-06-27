@@ -18,7 +18,6 @@ export class TranslationsController {
             'Content-Type': 'application/x-yaml',
             'Content-Disposition': `attachment; filename="${file_name}"`
         })
-        console.log(1);
         return new StreamableFile(stream);
     }
 

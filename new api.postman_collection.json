@@ -1,0 +1,178 @@
+{
+	"info": {
+		"_postman_id": "918d7ff4-68b8-4675-bb5b-2dd8c7433010",
+		"name": "new api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "26705210"
+	},
+	"item": [
+		{
+			"name": "Language",
+			"item": [
+				{
+					"name": "Get all languages",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "",
+									"type": "file",
+									"src": [],
+									"disabled": true
+								}
+							]
+						},
+						"url": "{{url80}}/translations"
+					},
+					"response": []
+				},
+				{
+					"name": "Update language",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"language\":\"UK\",\n    \"lang_short\":\"uk\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url80}}/languages/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Add language",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"language\":\"ukasdgsffdsgd\",\n    \"lang_short\":\"uk\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url80}}/languages"
+					},
+					"response": []
+				},
+				{
+					"name": "Get by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{url80}}/languages/1"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{url80}}/languages/1"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "locales",
+			"item": [
+				{
+					"name": "xlsx/xls send file",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/admin/Downloads/new_sheet-created_by_abcdpdf.xlsx"
+								}
+							]
+						},
+						"url": "{{url80}}/locales/add/en_EN/someFile.xml"
+					},
+					"response": []
+				},
+				{
+					"name": "json send file",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/admin/Downloads/some.json"
+								}
+							]
+						},
+						"url": "{{url80}}/locales/add/en_EN/someFile.json"
+					},
+					"response": []
+				},
+				{
+					"name": "yaml send file",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/admin/Downloads/some.yaml"
+								}
+							]
+						},
+						"url": "{{url80}}/locales/add/en_EN/someFile.yaml"
+					},
+					"response": []
+				},
+				{
+					"name": "download xlsx file",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{url80}}/locales/en_EN/someFile.xlsx"
+					},
+					"response": []
+				},
+				{
+					"name": "download json file",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{url80}}/locales/en_EN/someFile.json"
+					},
+					"response": []
+				},
+				{
+					"name": "download yaml file",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{url80}}/locales/en_EN/someFile.json"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
