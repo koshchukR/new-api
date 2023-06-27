@@ -21,6 +21,11 @@ export class TranslationsController {
         return new StreamableFile(stream);
     }
 
+    @Get(':id')
+    get(@Param('id') id: number){
+        return this.service.getTranslateById(id)
+    }
+
     @Post('add/:language/:file([a-z|A-Z\\d\\-_]*.(?:xlsx|xls|json|yaml))')
     @UseInterceptors(FileInterceptor('file'))
     async update(@UploadedFile() file: Express.Multer.File,

@@ -3,13 +3,14 @@ import { ICommandHandler } from "../../../../commands/i-command-handler";
 import { InjectModel } from "nest-knexjs";
 import { Knex } from "knex";
 import { AddLanguageCommand } from "../add-language.command";
+import { TranslationInterface } from "../../contracts/models/translation.interface";
 
 @Injectable()
 export class GetTranslationsCommandHandler implements ICommandHandler<any, any> {
     constructor(@InjectModel() private readonly connection: Knex) {
     }
 
-    execute(command: AddLanguageCommand): Promise<any> {
+    execute(command: AddLanguageCommand): Promise<Array<TranslationInterface>> {
         return this.connection
             .select(['t.key', 't.value'])
             .from('translations as t')

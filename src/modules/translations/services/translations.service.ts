@@ -4,12 +4,15 @@ import { AddTranslationsCommandHandler } from "../commands/handlers/add-translat
 import { GetTranslationsCommandHandler } from "../commands/handlers/get-translations.command-handler";
 import { FileFormationHelper } from '../helpers/file-formation.helper'
 import * as yaml from 'js-yaml';
+import { GetLanguageCommandHandler } from "../../languages/commands/handlers/get-language.command-handler";
 
 
 @Injectable()
 export class TranslationsService {
     constructor(private addLanguagesCommandHandler: AddTranslationsCommandHandler,
-                private getTranslationsCommandHandler: GetTranslationsCommandHandler) {
+                private getTranslationsCommandHandler: GetTranslationsCommandHandler,
+                private getLanguageCommandHandler: GetLanguageCommandHandler,
+                ) {
     }
 
     async createUpdateTranslationFile(file: Express.Multer.File, language: string, file_name: string) {
@@ -54,6 +57,12 @@ export class TranslationsService {
 
     }
 
+
+    async getTranslateById(id: number){
+        const language = await this.getLanguageCommandHandler.execute({id});
+        return this.getTranslationsCommandHandler.execute({language: language.lang_short})
+
+    }
 
 }
 
