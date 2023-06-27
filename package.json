@@ -19,7 +19,9 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "gen:m": "npx knex migrate:make migrate",
-    "run:m": "npx knex migrate:latest"
+    "dev:run:m": "npx knex migrate:latest --env dev",
+    "stage:run:m": "npx knex migrate:latest --env stage",
+    "prod:run:m": "npx knex migrate:latest --env prod"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
