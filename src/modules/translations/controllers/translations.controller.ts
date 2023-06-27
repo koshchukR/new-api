@@ -8,6 +8,13 @@ export class TranslationsController {
     constructor(private readonly service: TranslationsService) {
     }
 
+
+    @Get(':id')
+    get(@Param('id') id: number){
+        return this.service.getTranslateById(id)
+    }
+
+
     @Get(':language/:file([a-z|A-Z\\d\\-_]*.(?:xlsx|xls|json|yaml))')
     async download(@Param('language') language: string,
                    @Param('file') file_name: string,
@@ -19,11 +26,6 @@ export class TranslationsController {
             'Content-Disposition': `attachment; filename="${file_name}"`
         })
         return new StreamableFile(stream);
-    }
-
-    @Get(':id')
-    get(@Param('id') id: number){
-        return this.service.getTranslateById(id)
     }
 
     @Post('add/:language/:file([a-z|A-Z\\d\\-_]*.(?:xlsx|xls|json|yaml))')
