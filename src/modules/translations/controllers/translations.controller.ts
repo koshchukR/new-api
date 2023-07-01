@@ -23,7 +23,7 @@ export class TranslationsController {
   constructor(private readonly service: TranslationsService) {}
 
   @Get(':id')
-  @ApiOkResponse({ type: Array<TranslationInterface> })
+  @ApiOkResponse({ isArray: true, type: TranslationInterface })
   get(@Param('id') id: number) {
     return this.service.getTranslateById(id);
   }
@@ -40,7 +40,7 @@ export class TranslationsController {
     @Param('language') language: string,
     @Param('file') file_name: string,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<StreamableFile | void> {
+  ) {
     const stream = await this.service.downloadFile(language, file_name);
     response.set({
       'Content-Type': 'application/x-yaml',

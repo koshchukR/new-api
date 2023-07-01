@@ -2,37 +2,50 @@ import { ICommandHandler } from '../../../../commands/i-command-handler';
 import { LanguageFilter } from '../../contracts/filter/language.filter';
 import { LanguagesInterface } from '../../contracts/models/languages.interface';
 import { Injectable } from '@nestjs/common';
-import { Knex } from 'knex';
-import { InjectModel } from 'nest-knexjs';
+import { Repository } from 'typeorm';
+import { LanguagesEntity } from '../../../../entity/language.entity';
+import { TranslationsEntity } from '../../../../entity/translation.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class GetLanguagesListCommandsHandler
   implements ICommandHandler<LanguageFilter, Array<LanguagesInterface>>
 {
-  constructor(@InjectModel() private readonly connection: Knex) {}
+  constructor(
+    @InjectRepository(LanguagesEntity)
+    private languageRepository: Repository<LanguagesEntity>,
+    @InjectRepository(TranslationsEntity)
+    private translationRepository: Repository<TranslationsEntity>,
+  ) {}
 
   async execute(command: LanguageFilter): Promise<LanguagesInterface[]> {
-    const total = await this.connection
-      .count('_id as count')
-      .from('translations')
-      .where(this.connection.raw('languages_id = ?', [1]))
-      .first()
-      .then((value: { count: number }) => value.count);
+    // Create the subquery for "total"
+    const totalSubQuery = this.translationRepository
+      .createQueryBuilder('t')
+      .select('COUNT(t._id)')
+      .where('t.languages_id = 1')
+      .getQuery();
 
-    const languages = this.connection
-      .select<LanguagesInterface[]>([
-        'l.*',
-        this.connection.raw(`'${total}' as total`),
+    // Main query
+    return await this.languageRepository
+      .createQueryBuilder('languages')
+      .select([
+        'languages._id as _id',
+        'languages.language as language',
+        'languages.lang_short as lang_short',
+        'languages.can_delete as can_delete',
+        'COUNT(translations._id) AS items',
+        `(${totalSubQuery}) as total`,
       ])
-      .count(' t._id as items')
-      .from('languages as l')
-      .leftJoin('translations as t', 't.languages_id', 'l._id')
-      .groupBy(['l._id', 'l.can_delete', 'l.lang_short', 'l.language']);
-
-    if (command.limit) {
-      languages.limit(command.limit);
-    }
-
-    return languages as any;
+      .leftJoin(
+        TranslationsEntity,
+        'translations',
+        'translations.languages_id = languages._id',
+      )
+      .groupBy('languages._id')
+      .addGroupBy('languages.language')
+      .addGroupBy('languages.lang_short')
+      .addGroupBy('languages.can_delete')
+      .getRawMany();
   }
 }

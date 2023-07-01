@@ -3,7 +3,7 @@ import { LanguagesModule } from './modules/languages/languages.module';
 import { TranslationsModule } from './modules/translations/translations.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as process from 'process';
-import { KnexModule } from 'nest-knexjs';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 const config: any = (): string => {
   let env;
@@ -29,43 +29,18 @@ const config: any = (): string => {
       isGlobal: true,
       envFilePath: config(),
     }),
-    KnexModule.forRootAsync({
+    TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        config: {
-          debug: configService.get<string>('DEBUG') == 'true',
-          client: configService.get<string>('CLIENT'),
-          connection: {
-            port: configService.get<string>('DB_PORT'),
-            host: configService.get<string>('DB_HOST'),
-            user: configService.get<string>('DB_USER'),
-            password: configService.get<string>('DB_PASSWORD'),
-            database: configService.get<string>('DB_DATABASE'),
-          },
-          useNullAsDefault: true,
-          pool: { min: 2, max: 20 },
-          log: {
-            warn(message) {
-              console.warn(message);
-            },
-            error(message) {
-              console.error(message);
-            },
-            deprecate(message) {
-              console.warn(message);
-            },
-            debug(message) {
-              console.debug(
-                `[SQL]: ${message.sql}\r\nPARAMS: ${(
-                  message.bindings || []
-                ).join(', ')}`,
-              );
-            },
-          },
-          migrations: {
-            directory: './migrations',
-          },
-        },
+        type: 'mysql',
+        host: configService.get<string>('DB_HOST'),
+        port: configService.get<number>('DB_PORT'),
+        username: configService.get<string>('DB_USER'),
+        password: configService.get<string>('DB_PASSWORD'),
+        database: configService.get<string>('DB_DATABASE'),
+        entities: [__dirname + '/entity/*.entity{.ts,.js}'],
+        logging: configService.get<string>('DEBUG') == 'true',
+        synchronize: true,
       }),
       inject: [ConfigService],
     }),

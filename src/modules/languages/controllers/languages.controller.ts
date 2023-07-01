@@ -18,7 +18,7 @@ export class LanguagesController {
   constructor(private service: LanguagesService) {}
 
   @Get()
-  @ApiOkResponse({ type: Array<LanguagesInterface> })
+  @ApiOkResponse({ type: [LanguagesInterface] })
   list(@Query() filter: LanguageFilter): Promise<Array<LanguagesInterface>> {
     return this.service.getLanguageList(filter);
   }

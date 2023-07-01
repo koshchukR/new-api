@@ -1,38 +1,44 @@
 import { Injectable } from '@nestjs/common';
 import { ICommandHandler } from '../../../../commands/i-command-handler';
-import { InjectModel } from 'nest-knexjs';
-import { Knex } from 'knex';
 import { AddLanguageCommand } from '../add-language.command';
-import { LanguagesInterface } from '../../../languages/contracts/models/languages.interface';
+import { Repository } from 'typeorm';
+import { LanguagesEntity } from '../../../../entity/language.entity';
+import { TranslationsEntity } from '../../../../entity/translation.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class AddTranslationsCommandHandler
   implements ICommandHandler<AddLanguageCommand, void>
 {
-  constructor(@InjectModel() private readonly connection: Knex) {}
+  constructor(
+    @InjectRepository(LanguagesEntity)
+    private languageRepository: Repository<LanguagesEntity>,
+    @InjectRepository(TranslationsEntity)
+    private translationRepository: Repository<TranslationsEntity>,
+  ) {}
 
   async execute(command: AddLanguageCommand): Promise<void> {
+    const language = await this.languageRepository.findOne({
+      where: { lang_short: command.language },
+    });
 
+    await this.translationRepository
+      .createQueryBuilder()
+      .delete()
+      .from(TranslationsEntity)
+      .where('languages_id = :languages_id', { languages_id: language._id })
+      .execute();
 
-      const { _id: languages_id } = await this.connection
-          .select<LanguagesInterface>('_id')
-          .from('languages')
-          .where('lang_short', command.language)
-          .first();
+    const some = command.language_list.map((value) => ({
+      ...value,
+      languages: language,
+    }));
 
-
-    await this.connection('translations')
-      .where('languages_id', languages_id)
-      .del();
-
-
-    await this.connection
-      .insert(
-        command.language_list.map((value) => ({
-          ...value,
-          languages_id,
-        }))
-      )
-      .into('translations');
+    await this.translationRepository
+      .createQueryBuilder('translations')
+      .insert()
+      .into(TranslationsEntity)
+      .values(some)
+      .execute();
   }
 }

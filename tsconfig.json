@@ -17,6 +17,16 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
+     "lib": [
+        "es5",
+        "es6"
+     ],
+     "moduleResolution": "node",
+
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": [
+    "node_modules"
+  ],
+
 }
