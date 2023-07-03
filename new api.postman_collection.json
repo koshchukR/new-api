@@ -11,8 +11,11 @@
 			"item": [
 				{
 					"name": "Get all languages",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
-						"method": "POST",
+						"method": "GET",
 						"header": [],
 						"body": {
 							"mode": "formdata",
@@ -25,7 +28,7 @@
 								}
 							]
 						},
-						"url": "{{url80}}/translations"
+						"url": "{{url80}}/languages"
 					},
 					"response": []
 				},
@@ -103,7 +106,7 @@
 								}
 							]
 						},
-						"url": "{{url80}}/locales/add/en_EN/someFile.xml"
+						"url": "{{url80}}/locales/add/en_EN/someFile.xlsx"
 					},
 					"response": []
 				},
@@ -168,7 +171,16 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "{{url80}}/locales/en_EN/someFile.json"
+						"url": "{{url80}}/locales/en_EN/someFile.yaml"
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{url80}}/locales/1"
 					},
 					"response": []
 				}
