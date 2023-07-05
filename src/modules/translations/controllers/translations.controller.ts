@@ -42,8 +42,17 @@ export class TranslationsController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const stream = await this.service.downloadFile(language, file_name);
+    let contentType = 'application/octet-stream';
+    if (file_name.endsWith('.xlsx') || file_name.endsWith('.xls')) {
+      contentType =
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    } else if (file_name.endsWith('.json')) {
+      contentType = 'application/json';
+    } else if (file_name.endsWith('.yaml')) {
+      contentType = 'application/x-yaml';
+    }
     response.set({
-      'Content-Type': 'application/x-yaml',
+      'Content-Type': contentType,
       'Content-Disposition': `attachment; filename="${file_name}"`,
     });
     return new StreamableFile(stream);
